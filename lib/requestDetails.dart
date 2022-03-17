@@ -24,6 +24,9 @@ class _requestDetailsState extends State<requestDetails> {
   final database = FirebaseDatabase.instance.reference();
   var data;
   var dbTransactions;
+  var dbRequests;
+  var entryList;
+  String parkingSlotID = "";
 
   Map args = {};
 
@@ -53,6 +56,7 @@ class _requestDetailsState extends State<requestDetails> {
                       }else {
                         data = (snapshot.data! as Event).snapshot.value;
 
+                        parkingSlotID = data["ParkingSlotID"];
                         return Column(
                           children: [
                             const SizedBox(
@@ -263,10 +267,20 @@ class _requestDetailsState extends State<requestDetails> {
                             ),
                             Row(
                               children: [
-                                Text(data["RentDuration"].toString(), style: const TextStyle(
+                                Text(data["RentTimeFrom"] + " -".toString(), style: const TextStyle(
                                     color: Colors.black,
                                     fontWeight: FontWeight.w600,
-                                    fontSize: 14
+                                    fontSize: 16
+                                ),
+                                )
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Text(data["RentTimeTo"].toString(), style: const TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 16
                                 ),
                                 )
                               ],
@@ -611,6 +625,29 @@ class _requestDetailsState extends State<requestDetails> {
                             const SizedBox(
                               height: 50,
                             ),
+
+                            StreamBuilder(
+                            stream: database.child("Transactions").child(args["parkingLocationID"]).onValue,
+                            builder: (context, snapshot) {
+                              if(snapshot.hasData){
+                                if (snapshot.connectionState == ConnectionState.waiting) {
+                                return const Center(
+                                child: CircularProgressIndicator(),
+                                );
+                                } else if (snapshot.hasError) {
+                                return const Text("Something went wrong");
+                                }else{
+                                  dbRequests = (snapshot.data! as Event).snapshot.value;
+
+                                  if(dbRequests != null){
+                                    entryList = dbRequests.entries.toList();
+                                  }
+
+                                  print(entryList[0].value["userID"]);
+                                }
+                              }
+                              return const SizedBox();
+                            }),
                             Container(
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -631,12 +668,28 @@ class _requestDetailsState extends State<requestDetails> {
                                       if(requestCurrentStatus == "Declined"){
                                         database.child("Transactions").child(args["parkingLocationID"]).child(args["transactionNumber"]).update({
                                           "TransactionStatus": "Past",
+                                          "RequestStatus": "Declined"
                                         });
 
                                         database.child("UserData").child(data["userID"].toString()).child("Transactions").child(args["transactionNumber"]).update({
                                           "TransactionStatus": "Past",
+                                          "RequestStatus": "Declined"
                                         });
                                       }else{
+                                        for(int x = 0; x < entryList.length; x++){
+                                          if(entryList[x].value["RequestStatus"] == "Pending" && entryList[x].value["ParkingSlotID"] == parkingSlotID && entryList[x].key != args["transactionNumber"]){
+                                            database.child("Transactions").child(args["parkingLocationID"]).child(entryList[x].key).update({
+                                              "TransactionStatus": "Past",
+                                              "RequestStatus": "Declined"
+                                            });
+
+                                            database.child("UserData").child(entryList[x].value["userID"]).child("Transactions").child(entryList[x].key).update({
+                                              "TransactionStatus": "Past",
+                                              "RequestStatus": "Declined"
+                                            });
+                                          }
+                                        }
+
                                         database.child("Transactions").child(args["parkingLocationID"]).child(args["transactionNumber"]).update({
                                           "RequestStatus": requestCurrentStatus,
                                         });
@@ -650,7 +703,7 @@ class _requestDetailsState extends State<requestDetails> {
                                           "ReservedFrom": data["RentTimeFromFormatted"],
                                           "ReservedTo": data["RentTimeToFormatted"],
                                           "ReservationTransactionID": args["transactionNumber"],
-                                          "ReservationUserID": user.uid
+                                          "ReservationUserID": data["userID"]
                                         });
 
                                         /*database.child("UserData").child(data["userID"].toString()).child("Transactions").child(args["transactionNumber"]).get({

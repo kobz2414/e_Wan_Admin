@@ -16,7 +16,7 @@ class parkingType extends StatefulWidget {
 
 class _parkingTypeState extends State<parkingType> {
 
-  final List<String> parkingType = [
+  final List<String> parkingTypes = [
     'Paid',
     'Free',
   ];
@@ -26,6 +26,17 @@ class _parkingTypeState extends State<parkingType> {
   final database = FirebaseDatabase.instance.reference();
   var data;
   var dbParkingType;
+  bool enable = true;
+  String parkingType = "", rentTimeFrom = "", rentTimeFromFormatted = "", rentTimeTo = "", rentTimeToFormatted = "", rentPrice = "", activeParkingType = "";
+  // Initial Selected Value
+  String dropdownvalue = 'Select Parking Type';
+
+  // List of items in our dropdown menu
+  var items = [
+    'Paid',
+    'Free',
+  ];
+
 
   Map args = {};
 
@@ -33,6 +44,13 @@ class _parkingTypeState extends State<parkingType> {
   Widget build(BuildContext context) {
 
     args = ModalRoute.of(context)!.settings.arguments as Map;
+
+/*    database.child("ParkingLocation").child("Ateneo de Davao University").child("ParkingType").once().then((DataSnapshot dataSnapshot){
+      setState(() {
+        activeParkingType = dataSnapshot.value.toString();
+      });
+      print(activeParkingType);
+    });*/
 
     return Scaffold(
       body: SafeArea(
@@ -75,6 +93,172 @@ class _parkingTypeState extends State<parkingType> {
                           ),
                           Column(
                             children: const [
+                              Text('Current Parking Type', style: TextStyle(
+                                  color: Color(0xff5d6974),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12
+                              ),
+                              )
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          Column(
+                            children: [
+                              Text(data["ParkingType"], style: const TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16
+                              ),
+                              )
+                            ],
+                          ),
+
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          Column(
+                            children: const [
+                              Text('Current Parking Price', style: TextStyle(
+                                  color: Color(0xff5d6974),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12
+                              ),
+                              )
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          Column(
+                            children: [
+                              Text(data["RentPrice"], style: const TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16
+                              ),
+                              )
+                            ],
+                          ),
+
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          Column(
+                            children: const [
+                              Text('Current Rent Time Duration', style: TextStyle(
+                                  color: Color(0xff5d6974),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12
+                              ),
+                              )
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          Column(
+                            children: [
+                              Text(data["RentTimeFrom"], style: const TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16
+                              ),
+                              )
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 3,
+                          ),
+                          Column(
+                            children: [
+                              Text(data["RentTimeTo"], style: const TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16
+                              ),
+                              )
+                            ],
+                          ),
+
+                          const SizedBox(
+                            height: 30,
+                          ),
+                          DropdownButtonFormField2(
+                            decoration: InputDecoration(
+                              isDense: true,
+                              contentPadding: EdgeInsets.zero,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                            ),
+                            isExpanded: true,
+                            hint: Text(activeParkingType,
+                              style: TextStyle(fontSize: 14),
+                            ),
+                            icon: const Icon(
+                              Icons.arrow_drop_down,
+                              color: Colors.black45,
+                            ),
+                            iconSize: 20,
+                            buttonHeight: 50,
+                            buttonPadding: const EdgeInsets.only(left: 20, right: 10),
+                            dropdownDecoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            items: parkingTypes
+                                .map((item) =>
+                                DropdownMenuItem<String>(
+                                  value: item,
+                                  child: Text(
+                                    item,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ))
+                                .toList(),
+                            onChanged: (value) {
+                              setState(() {
+                                if(value == "Paid"){
+                                  activeParkingType = "Paid";
+                                  enable = true;
+                                }else{
+                                  activeParkingType = "Free";
+                                  enable = false;
+                                }
+                              });
+
+                              parkingType = value.toString();
+                            },
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          TextField(
+                            enabled: enable ? true : false,
+                            controller: price,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              labelText: 'Parking Price*',
+                              hintText: data["RentPrice"],
+                            ),
+                            keyboardType: TextInputType.number,
+                            inputFormatters: <TextInputFormatter>[
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
+                            onChanged: (price){
+                              rentPrice = price;
+                            },
+                          ),
+                          const SizedBox(
+                            height: 30,
+                          ),
+                          Column(
+                            children: const [
                               Text('Rent Time Start', style: TextStyle(
                                   color: Color(0xff5d6974),
                                   fontWeight: FontWeight.bold,
@@ -83,36 +267,20 @@ class _parkingTypeState extends State<parkingType> {
                               )
                             ],
                           ),
-                          /*const SizedBox(
-                          height: 5,
-                        ),
-                        Row(
-                          children: [
-                            Text(data["Email"].toString(), style: const TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 16
-                            ),
-                            )
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 5,
-                        ),*/
                           Column(
                             children: [
                               ElevatedButton(
-                                  onPressed: data["ParkingType"] == "Free" ? null : (){
+                                  onPressed: !enable ? null : (){
                                     DatePicker.showDateTimePicker(context, showTitleActions: true,
                                         onConfirm: (date) {
-                                          database.child("ParkingLocation").child("Ateneo de Davao University").update({
-                                            "RentTimeFrom": DateFormat("EEE, MMM d - h:mm a").format(date),
-                                            "RentTimeFromFormatted" : date.toString(),
+                                          setState(() {
+                                            rentTimeFrom = DateFormat("EEE, MMM d - h:mm a").format(date);
+                                            rentTimeFromFormatted = date.toString();
                                           });
                                         },
                                         currentTime: DateTime.now());
                                   },
-                                  child: Text(data["RentTimeFrom"], style: const TextStyle(
+                                  child: Text(rentTimeFrom, style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 12
                                   ),
@@ -143,17 +311,17 @@ class _parkingTypeState extends State<parkingType> {
                           Column(
                             children: [
                               ElevatedButton(
-                                  onPressed: data["ParkingType"] == "Free" ? null : (){
+                                  onPressed: !enable ? null : (){
                                     DatePicker.showDateTimePicker(context, showTitleActions: true,
                                         onConfirm: (date) {
-                                          database.child("ParkingLocation").child("Ateneo de Davao University").update({
-                                            "RentTimeTo": DateFormat("EEE, MMM d - h:mm a").format(date),
-                                            "RentTimeToFormatted" : date.toString(),
+                                          setState(() {
+                                            rentTimeTo = DateFormat("EEE, MMM d - h:mm a").format(date);
+                                            rentTimeToFormatted = date.toString();
                                           });
                                         },
                                         currentTime: DateTime.now());
                                   },
-                                  child: Text(data["RentTimeTo"], style: const TextStyle(
+                                  child: Text(rentTimeTo, style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 12
                                   ),
@@ -170,71 +338,225 @@ class _parkingTypeState extends State<parkingType> {
                           const SizedBox(
                             height: 20,
                           ),
-                          TextField(
-                            enabled: data["ParkingType"] == "Free" ? false : true,
-                            controller: price,
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              labelText: 'Parking Price*',
-                              hintText: data["RentPrice"],
-                            ),
-                            keyboardType: TextInputType.number,
-                            inputFormatters: <TextInputFormatter>[
-                              FilteringTextInputFormatter.digitsOnly
-                            ],
-                            onChanged: (price){
-                              database.child("ParkingLocation").child("Ateneo de Davao University").update({
-                                "RentPrice": price,
-                              });
-                            },
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
 
-                          DropdownButtonFormField2(
-                            decoration: InputDecoration(
-                              isDense: true,
-                              contentPadding: EdgeInsets.zero,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                            ),
-                            isExpanded: true,
-                            hint: Text(data["ParkingType"],
-                              style: TextStyle(fontSize: 14),
-                            ),
-                            icon: const Icon(
-                              Icons.arrow_drop_down,
-                              color: Colors.black45,
-                            ),
-                            iconSize: 20,
-                            buttonHeight: 50,
-                            buttonPadding: const EdgeInsets.only(left: 20, right: 10),
-                            dropdownDecoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            items: parkingType
-                                .map((item) =>
-                                DropdownMenuItem<String>(
-                                  value: item,
-                                  child: Text(
-                                    item,
-                                    style: const TextStyle(
-                                      fontSize: 14,
+                          Container(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                ElevatedButton(
+                                    onPressed:  (){
+                                      if(data["ParkingType"] == "Free"){
+                                        if(activeParkingType == ""){
+                                          showDialog<void>(
+                                            context: context,
+                                            barrierDismissible: false, // user must tap button!
+                                            builder: (BuildContext context) {
+                                              return AlertDialog(
+                                                title: const Text('Incomplete Details'),
+                                                content: SingleChildScrollView(
+                                                  child: ListBody(
+                                                    children: const <Widget>[
+                                                      Text('Please select a Parking Type'),
+                                                    ],
+                                                  ),
+                                                ),
+                                                actions: <Widget>[
+                                                  TextButton(
+                                                    child: const Text('Close'),
+                                                    onPressed: () {
+                                                      Navigator.of(context).pop();
+                                                    },
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          );
+                                        }else if(activeParkingType == "Paid"  && (rentTimeTo == "" || rentTimeFrom == "" || price == "")){
+                                          showDialog<void>(
+                                            context: context,
+                                            barrierDismissible: false, // user must tap button!
+                                            builder: (BuildContext context) {
+                                              return AlertDialog(
+                                                title: const Text('Incomplete Details'),
+                                                content: SingleChildScrollView(
+                                                  child: ListBody(
+                                                    children: const <Widget>[
+                                                      Text('Please input all fields'),
+                                                    ],
+                                                  ),
+                                                ),
+                                                actions: <Widget>[
+                                                  TextButton(
+                                                    child: const Text('Close'),
+                                                    onPressed: () {
+                                                      Navigator.of(context).pop();
+                                                    },
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          );
+                                        }else{
+                                          database.child("ParkingLocation").child("Ateneo de Davao University").update({
+                                            "RentTimeFrom": rentTimeFrom,
+                                            "RentTimeFromFormatted" : rentTimeFromFormatted,
+                                          });
+
+                                          database.child("ParkingLocation").child("Ateneo de Davao University").update({
+                                            "RentTimeTo": rentTimeTo,
+                                            "RentTimeToFormatted" : rentTimeToFormatted,
+                                          });
+
+                                          database.child("ParkingLocation").child("Ateneo de Davao University").update({
+                                            "RentPrice": rentPrice,
+                                          });
+
+                                          database.child("ParkingLocation").child("Ateneo de Davao University").update({
+                                            "ParkingType": parkingType,
+                                          });
+
+                                          Navigator.pop(context);
+                                        }
+                                      }else if (data["ParkingType"] == "Paid"){
+                                        if(activeParkingType == ""){
+                                          showDialog<void>(
+                                            context: context,
+                                            barrierDismissible: false, // user must tap button!
+                                            builder: (BuildContext context) {
+                                              return AlertDialog(
+                                                title: const Text('Incomplete Details'),
+                                                content: SingleChildScrollView(
+                                                  child: ListBody(
+                                                    children: const <Widget>[
+                                                      Text('Please select a Parking Type'),
+                                                    ],
+                                                  ),
+                                                ),
+                                                actions: <Widget>[
+                                                  TextButton(
+                                                    child: const Text('Close'),
+                                                    onPressed: () {
+                                                      Navigator.of(context).pop();
+                                                    },
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          );
+                                        }else if (activeParkingType == "Free"){
+                                          database.child("ParkingLocation").child("Ateneo de Davao University").update({
+                                            "RentTimeFrom": "",
+                                            "RentTimeFromFormatted" : "",
+                                          });
+
+                                          database.child("ParkingLocation").child("Ateneo de Davao University").update({
+                                            "RentTimeTo": "",
+                                            "RentTimeToFormatted" : "",
+                                          });
+
+                                          database.child("ParkingLocation").child("Ateneo de Davao University").update({
+                                            "RentPrice": "",
+                                          });
+
+                                          database.child("ParkingLocation").child("Ateneo de Davao University").update({
+                                            "ParkingType": parkingType,
+                                          });
+
+                                          Navigator.pop(context);
+                                        }else{
+
+                                          if(price.text != ""){
+                                            database.child("ParkingLocation").child("Ateneo de Davao University").update({
+                                              "RentPrice": rentPrice,
+                                            });
+                                          }
+
+                                          if(rentTimeTo != ""){
+                                            database.child("ParkingLocation").child("Ateneo de Davao University").update({
+                                              "RentTimeTo": rentTimeTo,
+                                              "RentTimeToFormatted" : rentTimeToFormatted,
+                                            });
+                                          }
+
+                                          if(rentTimeFrom != ""){
+                                            database.child("ParkingLocation").child("Ateneo de Davao University").update({
+                                              "RentTimeFrom": rentTimeFrom,
+                                              "RentTimeFromFormatted" : rentTimeFromFormatted,
+                                            });
+                                          }
+
+                                          database.child("ParkingLocation").child("Ateneo de Davao University").update({
+                                            "ParkingType": parkingType,
+                                          });
+
+                                          Navigator.pop(context);
+                                        }
+                                      }
+
+
+                                      /*if(activeParkingType == "Paid" && ((rentTimeTo == "" || rentTimeFrom == "" || price == "") || (data["RentPrice"] == "" || data["RentTimeTo"] == "" || data["RentTimeFrom"] == ""))){
+                                        showDialog<void>(
+                                          context: context,
+                                          barrierDismissible: false, // user must tap button!
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: const Text('Incomplete Details'),
+                                              content: SingleChildScrollView(
+                                                child: ListBody(
+                                                  children: const <Widget>[
+                                                    Text('Please input all fields'),
+                                                  ],
+                                                ),
+                                              ),
+                                              actions: <Widget>[
+                                                TextButton(
+                                                  child: const Text('Close'),
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      }else{
+                                        database.child("ParkingLocation").child("Ateneo de Davao University").update({
+                                          "RentTimeFrom": rentTimeFrom,
+                                          "RentTimeFromFormatted" : rentTimeFromFormatted,
+                                        });
+
+                                        database.child("ParkingLocation").child("Ateneo de Davao University").update({
+                                          "RentTimeTo": rentTimeTo,
+                                          "RentTimeToFormatted" : rentTimeFromFormatted,
+                                        });
+
+                                        database.child("ParkingLocation").child("Ateneo de Davao University").update({
+                                          "RentPrice": rentPrice,
+                                        });
+
+                                        database.child("ParkingLocation").child("Ateneo de Davao University").update({
+                                          "ParkingType": parkingType,
+                                        });
+
+                                        Navigator.pop(context);
+                                      }*/
+                                    },
+                                    child: const Text("SAVE", style: TextStyle(
+                                        fontWeight: FontWeight.bold
                                     ),
-                                  ),
-                                ))
-                                .toList(),
-                            onChanged: (value) {
-                              database.child("ParkingLocation").child("Ateneo de Davao University").update({
-                                "ParkingType": value,
-                              });
-                            },
+                                    ),
+                                    style: ElevatedButton.styleFrom(
+                                        primary: Colors.white,
+                                        onPrimary: Colors.black,
+                                        minimumSize: Size(MediaQuery.of(context).size.width-150, 40),
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(30.0)
+                                        )
+                                    )
+                                )
+                              ],
+                            ),
                           ),
-                          const SizedBox(height: 30),
                           Container(
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,

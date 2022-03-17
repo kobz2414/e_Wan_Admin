@@ -510,7 +510,7 @@ class _homePageState extends State<homePage> {
                                                                     children: [
                                                                       Text(
                                                                         entryList[index]
-                                                                            .value["ParkingLocationName"],
+                                                                            .value["ParkingSlotID"],
                                                                         style: const TextStyle(
                                                                             color: Color(
                                                                                 0xff252626),

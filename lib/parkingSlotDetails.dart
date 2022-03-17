@@ -64,6 +64,8 @@ class _showParkingSlotDetailsState extends State<parkingSlotDetails> {
 
                               dbData = (snapshot.data! as Event).snapshot.value;
 
+                              print(dbData);
+
                               return  Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: <Widget>[
@@ -95,6 +97,20 @@ class _showParkingSlotDetailsState extends State<parkingSlotDetails> {
                                     fontWeight: FontWeight.w800,
                                   ),
                                   ),
+                                  const SizedBox(height: 20,),
+                                  const Text("Marked as", style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w800,
+                                      color: Color(0xff5d6974)
+                                  ),
+                                  ),
+                                  const SizedBox(height: 1,),
+                                  Text(dbData["ParkingAvailability"], style: const
+                                  TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                  ),
                                   const SizedBox(height: 10,),
                                   Text("LAST UPDATED: " + dbData["ArduinoLastUpdateDateAndTime"].toUpperCase(), style: const
                                   TextStyle(
@@ -104,20 +120,18 @@ class _showParkingSlotDetailsState extends State<parkingSlotDetails> {
                                   ),
                                   ),
                                   const SizedBox(height: 30,),
-                                  args["parkingType"] == "Paid" ?
+                                  dbData["ParkingAvailability"] == "Available"  ?
                                   Container(
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
                                         ElevatedButton(
-                                            onPressed: dbData["ArduinoStatus"] == "Not Available" || dbData["ArduinoStatus"] == "Occupied" || dbData["ArduinoStatus"] == "Reserved" ? null : (){
-                                              Navigator.pushReplacementNamed(context, '/parkingReservation', arguments: {
-                                                'parkingSlotID': args["parkingSlotID"],
-                                                'parkingLocationID': args["parkingLocationID"],
+                                            onPressed: dbData["ParkingAvailability"] == "Available" && (dbData["ArduinoStatus"] == "Occupied" || dbData["ArduinoStatus"] == "Reserved") ? null : (){
+                                              databaseParking.child("ParkingSlot").child(args["parkingLocationID"]).child(args["parkingSlotID"]).update({
+                                                "ParkingAvailability": "Unavailable",
                                               });
-                                              ;
                                             },
-                                            child: const Text("RESERVE", style: TextStyle(
+                                            child: const Text("MARK AS UNAVAILABLE", style: TextStyle(
                                                 fontWeight: FontWeight.bold
                                             ),
                                             ),
@@ -138,10 +152,12 @@ class _showParkingSlotDetailsState extends State<parkingSlotDetails> {
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
                                         ElevatedButton(
-                                            onPressed: dbData["ArduinoStatus"] == "Not Available" || dbData["ArduinoStatus"] == "Occupied" || dbData["ArduinoStatus"] == "Reserved" ? null : (){
-                                              Navigator.pop(context);
+                                            onPressed: (){
+                                              databaseParking.child("ParkingSlot").child(args["parkingLocationID"]).child(args["parkingSlotID"]).update({
+                                                "ParkingAvailability": "Available",
+                                              });
                                             },
-                                            child: const Text("DIRECTIONS", style: TextStyle(
+                                            child: const Text("MARK AS AVAILABLE", style: TextStyle(
                                                 fontWeight: FontWeight.bold
                                             ),
                                             ),

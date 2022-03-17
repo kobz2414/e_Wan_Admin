@@ -159,6 +159,8 @@ class _transactionsState extends State<paymentMethod> {
                   ),
                 ),
               ),
+              const SizedBox(
+                height: 30,),
               Container(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,

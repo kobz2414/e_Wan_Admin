@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -373,6 +375,7 @@ class _parkingSlotState extends State<parkingSlot> {
                                       ],
                                     ),
                                   ),
+
                                   //Parking Slot Grp
                                   Positioned(
                                       child:
@@ -385,6 +388,22 @@ class _parkingSlotState extends State<parkingSlot> {
                                               child:  Stack(
                                                 alignment: Alignment.center,
                                                 children: [
+                                                  //LABEL ROAD
+                                                  Positioned(
+                                                    top: 0,
+                                                    right: 50,
+                                                    child: RotatedBox(
+                                                      quarterTurns: 1,
+                                                      child: SizedBox(
+                                                        child: Text("ROAD", style: TextStyle(
+                                                            color: Colors.grey[800],
+                                                            fontSize: 50,
+                                                            fontWeight: FontWeight.w900,
+                                                            letterSpacing: 170
+                                                        )),
+                                                      ),
+                                                    )
+                                                  ),
                                                   //PARKING SLOTS 1-10
                                                   Positioned(
                                                     top: 0,
