@@ -1,11 +1,32 @@
+import 'package:e_wan_admin/homePage.dart';
 import 'package:e_wan_admin/signIn.dart';
-import 'package:e_wan_admin/startPage.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:e_wan_admin/signIn/AuthService.dart';
+import 'package:e_wan_admin/signIn/user_model.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class homePageController extends StatelessWidget {
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context){
+    final authService = Provider.of<AuthService>(context);
+    return StreamBuilder<User?>(
+      stream: authService.user,
+      builder: (_, AsyncSnapshot<User?> snapshot){
+        if (snapshot.connectionState == ConnectionState.active){
+          final User? user = snapshot.data;
+          return user == null ? signIn() : homePage();
+        }else{
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+      },
+    );
+  }
+
+  /*=> Scaffold(
     body: StreamBuilder(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot){
@@ -20,5 +41,5 @@ class homePageController extends StatelessWidget {
         }
       },
     ),
-  );
+  )*/
 }

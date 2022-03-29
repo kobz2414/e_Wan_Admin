@@ -28,7 +28,7 @@ class _homePageState extends State<startPage> {
                 child: SingleChildScrollView(
                     child:
                       Stack(
-                    children: [
+                      children: [
                       //LOGOUT AND ACCOUNT
                       Positioned(
                           top: 13,
