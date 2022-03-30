@@ -206,7 +206,7 @@ class _parkingManagementDetailsState extends State<parkingManagementDetails> {
                                         children: [
                                           ElevatedButton(
                                               onPressed: (){
-                                                acceptParkingLocationRequest(dbData["parkingName"], dbData["parkingLocLat"], dbData["parkingLocLng"], dbData["uid"], int.parse(dbData["parkingSlotsNum"]));
+                                                acceptParkingLocationRequest(dbData["parkingName"], dbData["parkingLocLat"], dbData["parkingLocLng"], dbData["uid"], int.parse(dbData["parkingSlotsNum"]), dbData["uid"]);
                                                 Navigator.pop(context);
                                               },
                                               child: const Text("APPROVE", style: TextStyle(
@@ -295,7 +295,7 @@ class _parkingManagementDetailsState extends State<parkingManagementDetails> {
     db.child("Requests").child("ParkingPlace").child(args["requestID"]).remove();
   }
 
-  void acceptParkingLocationRequest(String parkingName, double parkingLat, double parkingLong, String uid, int parkingSize){
+  void acceptParkingLocationRequest(String parkingName, double parkingLat, double parkingLong, String uid, int parkingSize, String ownerUID){
     db.child("ParkingLocation").child(parkingName).set({
       "ParkingType" : "Free",
       "RentPrice" : "",
@@ -318,6 +318,7 @@ class _parkingManagementDetailsState extends State<parkingManagementDetails> {
 
     for(int x = 1; x <= parkingSize; x++ ){
       db.child("ParkingSlot").child(parkingName).child(parkingName + " " + x.toString()).set({
+        "OwnerUID" : ownerUID,
         "ArduinoLastUpdateDate" : "",
         "ArduinoLastUpdateDateAndTime" : "",
         "ArduinoLastUpdateTime" : "",

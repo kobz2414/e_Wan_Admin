@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ewan_admin.e_wan_admin">
    <application
-        android:label="E-Wan Owner"
+        android:label="E-Wan Admin"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
